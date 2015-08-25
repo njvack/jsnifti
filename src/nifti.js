@@ -1,5 +1,33 @@
 /* Currently this is just me screwing around to see what works */
 
+function platformIsLittleEndian() {
+  var buf = new ArrayBuffer(2)
+  var v = new DataView(buf);
+  v.setInt8(0, 1);
+  var shortArr = new Int16Array(buf);
+  return shortArr[0] === 1;
+}
+
+var EndianTester = {
+  'jBinary.all': 'EndianTest',
+  'jBinary.littleEndian': true,
+
+  EndianTest: {
+    little_endian: jBinary.Type({
+      read: function(ctx) {
+        var v = this.binary.view;
+        if (v.getInt32(0, true) === 348) {
+          return true;
+        }
+        if (v.getInt32(0, false) === 348) {
+          return false;
+        }
+        throw new TypeError("Does not appear to be a nifti1 file.");
+      }
+    }),
+  }
+}
+
 var Nifti1Typeset = {
   'jBinary.all': 'Nifti1File',
   'jBinary.littleEndian': false,
@@ -49,14 +77,35 @@ var Nifti1Typeset = {
     intent_name: ['string', 16],        // 328; name or meaning of data
     magic: ['string0', 4],              // 344; must be 'ni1\0' or 'n+1\0'
 
+    _binary: jBinary.Type({
+      read: function(header) {
+        header._binary = this;
+      }
+    }),
+
     voxel_data: jBinary.Type({
         read: function(header) {
+            // The first element in dim is the number of nonzero dimensions
             var voxel_dims = header.dim.slice(1, header.dim[0] + 1);
             var vox_count = voxel_dims.reduce( function (prev, cur) { return prev * cur; });
             var bytes_per_voxel = (header.bitpix / 8);
             var byte_count = vox_count * bytes_per_voxel;
-            var jdarr = new jDataView(this.view.buffer, header.vox_offset, byte_count);
-            return jdarr;
+            var data_types = {
+              2: Uint8Array,
+              4: Int16Array,
+              8: Int32Array,
+              16: Float32Array,
+              64: Float64Array,
+              256: Int8Array,
+              512: Uint16Array,
+              768: Uint32Array,
+            };
+            var data_type = data_types[header.datatype];
+            console.log(data_type);
+            var jv = new DataView(this.view.buffer, header.vox_offset, byte_count, false);
+            return new data_type(jv.buffer);
+            //var jdarr = new jDataView(this.view.buffer, header.vox_offset, byte_count);
+            //return jdarr;
         }
     }),
   }
