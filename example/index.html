@@ -1,0 +1,28 @@
+<!DOCYTPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>jBinary nifti demo</title>
+<script type="text/javascript" src="http://jdataview.github.io/dist/jdataview.js"></script>
+<script type="text/javascript" src="http://jdataview.github.io/dist/jbinary.js"></script>
+<script type="text/javascript" src="nifti.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+jBinary.load('zstat1.nii', Nifti1Typeset).then(function(binary) {
+    window.binary = binary;
+    window.nii = binary.readAll();
+});
+
+jBinary.load('minimal.nii', EndianTester).then(function(binary) {
+    window.be = binary.readAll();
+})
+jBinary.load('minimal_le.nii', EndianTester).then(function(binary) {
+    window.le = binary.readAll();
+})
+jBinary.load('index.html', EndianTester).then(function(binary) {
+    window.le = binary.readAll();
+})
+</script>
+</body>
+</html>
