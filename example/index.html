@@ -5,24 +5,25 @@
 <title>jBinary nifti demo</title>
 <script type="text/javascript" src="http://jdataview.github.io/dist/jdataview.js"></script>
 <script type="text/javascript" src="http://jdataview.github.io/dist/jbinary.js"></script>
+<script type="text/javascript" src="ndarray.js"></script>
 <script type="text/javascript" src="nifti.js"></script>
 </head>
 <body>
 <script type="text/javascript">
-jBinary.load('zstat1.nii', Nifti1Typeset).then(function(binary) {
-    window.binary = binary;
-    window.nii = binary.readAll();
-});
+// jBinary.load('zstat1.nii', Nifti1Typeset).then(function(binary) {
+//     window.binary = binary;
+//     window.nii = binary.readAll();
+// });
+ras = nifti1Image('avg_ras.nii').read();
+rai = nifti1Image('avg_rai.nii').read();
+rps = nifti1Image('avg_rps.nii').read();
+rpi = nifti1Image('avg_rpi.nii').read();
+las = nifti1Image('avg_las.nii').read();
+lai = nifti1Image('avg_lai.nii').read();
+lps = nifti1Image('avg_lps.nii').read();
+lpi = nifti1Image('avg_lpi.nii').read();
 
-jBinary.load('minimal.nii', EndianTester).then(function(binary) {
-    window.be = binary.readAll();
-})
-jBinary.load('minimal_le.nii', EndianTester).then(function(binary) {
-    window.le = binary.readAll();
-})
-jBinary.load('index.html', EndianTester).then(function(binary) {
-    window.le = binary.readAll();
-})
 </script>
+<canvas id ="foo" height="64" width="64"></canvas>
 </body>
 </html>
