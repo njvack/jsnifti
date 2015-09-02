@@ -1,7 +1,7 @@
 "use strict";
-/* Currently this is just me screwing around to see what works */
+var ndarray = require('ndarray');
 
-var nifti1Image = function(input) {
+module.exports = function(input) {
   var my = {};
   var pub = {};
   my.input = input;
@@ -117,7 +117,11 @@ var nifti1Image = function(input) {
   }
 
   pub.ras_slice = function(r, a, s) {
-    return pub.voxel_data.pick(r, a, s).transpose(1, 0);
+    return pub.voxel_data.pick(r, a, s);
+  }
+
+  pub.ras_dims = function() {
+    return pub.voxel_data.shape;
   }
 
   my.platform_is_little_endian = function() {
@@ -248,7 +252,7 @@ var nifti1Image = function(input) {
     }
   }; // my.Nifti1Typeset
 
-  pub.read = function() {
+  pub.read = function(callback) {
     jBinary.load(my.input, my.EndianTester).then(function(binary) {
       var result = binary.readAll();
       var view = binary.view;
@@ -258,6 +262,9 @@ var nifti1Image = function(input) {
       pub.header = nii_binary.readAll();
       var vd = pub.header.voxel_data;
       pub.voxel_data = vd.step.apply(vd, my.data_steps());
+      if (typeof(callback) === 'function') {
+        callback();
+      }
     });
     return pub;
   }
@@ -265,12 +272,3 @@ var nifti1Image = function(input) {
   pub.my = my; // Remove this to make stuff private
   return pub;
 };
-
-function make_canvas(slice) {
-  var dims = slice.shape.slice();
-  dims.push(3);
-  console.log(dims)
-  var img_pix = ndarray(dims);
-  // Just gonna do red...
-  ops.assign(img_pix.pick(null, null, 0), slice)
-}
