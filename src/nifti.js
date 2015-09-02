@@ -1,5 +1,6 @@
 "use strict";
 var ndarray = require('ndarray');
+var jBinary = require('jbinary');
 
 module.exports = function(input) {
   var my = {};
@@ -227,19 +228,19 @@ module.exports = function(input) {
               var _littleEndian = my.platform_is_little_endian()
               if (_littleEndian === this.view._littleEndian) {
                 // We match, just make an array view
-                console.log("endian match");
+                // console.log("endian match");
                 var first_byte = header.vox_offset;
                 var last_byte = first_byte + byte_count + 1;
-                console.log("Reading from " + first_byte + " to " + last_byte)
+                // console.log("Reading from " + first_byte + " to " + last_byte)
                 typed_array = new data_type(
                   this.view.buffer.slice(first_byte, last_byte));
               } else {
                 // We need to copy the data.
-                console.log("endian mismatch");
+                // console.log("endian mismatch");
                 var data_view = new jDataView(this.view.buffer, header.vox_offset, byte_count);
                 var getter_name = data_types[header.datatype][1];
                 typed_array = new data_type(vox_count);
-                console.log("Allocated " + vox_count + " elements");
+                // console.log("Allocated " + vox_count + " elements");
                 for (var i = 0; i < vox_count; i++) {
                   typed_array[i] = data_view[getter_name](i * bytes_per_voxel, this.view._littleEndian);
                 }
