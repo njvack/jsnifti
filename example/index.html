@@ -3,25 +3,94 @@
 <head>
 <meta charset="utf-8" />
 <title>jBinary nifti demo</title>
-<script type="text/javascript" src="http://jdataview.github.io/dist/jdataview.js"></script>
-<script type="text/javascript" src="http://jdataview.github.io/dist/jbinary.js"></script>
-<script type="text/javascript" src="ndarray.js"></script>
-<script type="text/javascript" src="nifti.js"></script>
+<script type="text/javascript" src="nifti_browser.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<style type="text/css">
+.slice {
+    float: left;
+    padding: 1em;
+}
+</style>
 </head>
 <body>
+<h1>Nifti reader test</h1>
+<nav>
+  Image: <select id="image-select">
+  <option value="avg_ras.nii">R-L labeled average (ras)</option>
+  <option value="avg_rai.nii">R-L labeled average (rai)</option>
+  <option value="avg_rps.nii">R-L labeled average (rps)</option>
+  <option value="avg_rpi.nii">R-L labeled average (rpi)</option>
+  <option value="avg_las.nii">R-L labeled average (las)</option>
+  <option value="avg_lai.nii">R-L labeled average (lai)</option>
+  <option value="avg_lps.nii">R-L labeled average (lps)</option>
+  <option value="avg_lpi.nii">R-L labeled average (lpi)</option>
+  <option value="avg152T1_RL_nifti.nii">R-L labeled average (big-endian)</option>
+  <option value="zstat1.nii">z map</option>
+  </select>
+</nav>
+<div class="container">
+  <div data-dim="0" data-use="slice" class="slice">
+    <canvas height="100" width="100"></canvas>
+    <br />
+    <input type="range" />
+    <br />
+    Slice from right: <span></span>
+  </div>
+  <div data-dim="1" data-use="slice" class="slice">
+    <canvas height="100" width="100"></canvas>
+    <br />
+    <input type="range" />
+    <br />
+    Slice from anterior: <span></span>
+  </div>
+  <div data-dim="2" data-use="slice" class="slice">
+    <canvas height="100" width="100"></canvas>
+    <br />
+    <input type="range" />
+    <br />
+    Slice from superior: <span></span>
+  </div>
+</div>
 <script type="text/javascript">
-// jBinary.load('zstat1.nii', Nifti1Typeset).then(function(binary) {
-//     window.binary = binary;
-//     window.nii = binary.readAll();
-// });
-ras = nifti1Image('avg_ras.nii').read();
-rai = nifti1Image('avg_rai.nii').read();
-rps = nifti1Image('avg_rps.nii').read();
-rpi = nifti1Image('avg_rpi.nii').read();
-las = nifti1Image('avg_las.nii').read();
-lai = nifti1Image('avg_lai.nii').read();
-lps = nifti1Image('avg_lps.nii').read();
-lpi = nifti1Image('avg_lpi.nii').read();
+$(function() {
+    $('#image-select').change(function() {
+        var image_filename = $(this).val();
+        var image = nifti1Image(image_filename).read(function() {
+            setup_canvas_ranges(image);
+        });
+        window.image = image;
+    });
+
+    $('input[type=range]').on('input', function(evt){
+        var slice_idx = parseInt($(this).val(), 10);
+        var target_canvas = $(this).siblings('canvas');
+        var slice_indicator = $(this).siblings('span');
+        var parent = $(this).parents('[data-use=slice]');
+        var slice_dim = parent.data('dim');
+        var sel = [null, null, null]
+        sel[slice_dim] = slice_idx;
+        var slice_data = window.image.ras_slice(sel[0], sel[1], sel[2]);
+        window.slice_data = slice_data;
+        var new_canvas = save_pixels(slice_data, 'canvas');
+        target_canvas.replaceWith(new_canvas);
+        slice_indicator.text(slice_idx);
+    })
+
+    $('#image-select').change();
+})
+
+function setup_canvas_ranges(img) {
+    var dims = img.ras_dims();
+    for (var i = 0; i < dims.length; i++) {
+        var sd = dims.slice(); // Make a copy, we'll be changing it
+        var my_range = sd.splice(i, 1);
+        var container = $('[data-dim='+i+'][data-use=slice]')
+        var range = container.children('input[type=range]');
+        range.attr('min', 0);
+        range.attr('max', my_range-1);
+        range.trigger('input');
+    }
+}
 
 </script>
 <canvas id ="foo" height="64" width="64"></canvas>
