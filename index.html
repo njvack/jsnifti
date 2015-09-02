@@ -3,29 +3,34 @@
 <head>
 <meta charset="utf-8" />
 <title>jBinary nifti demo</title>
-<script type="text/javascript" src="nifti_browser.js"></script>
+<script type="text/javascript" src="js/jsnifti-demo-min.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <style type="text/css">
 .slice {
     float: left;
     padding: 1em;
 }
+.slice span {
+  display: inline-block;
+  min-width: 2em;
+}
+
 </style>
 </head>
 <body>
 <h1>Nifti reader test</h1>
 <nav>
   Image: <select id="image-select">
-  <option value="avg_ras.nii">R-L labeled average (ras)</option>
-  <option value="avg_rai.nii">R-L labeled average (rai)</option>
-  <option value="avg_rps.nii">R-L labeled average (rps)</option>
-  <option value="avg_rpi.nii">R-L labeled average (rpi)</option>
-  <option value="avg_las.nii">R-L labeled average (las)</option>
-  <option value="avg_lai.nii">R-L labeled average (lai)</option>
-  <option value="avg_lps.nii">R-L labeled average (lps)</option>
-  <option value="avg_lpi.nii">R-L labeled average (lpi)</option>
-  <option value="avg152T1_RL_nifti.nii">R-L labeled average (big-endian)</option>
-  <option value="zstat1.nii">z map</option>
+  <option value="sample_images/avg_ras.nii">R-L labeled average (ras)</option>
+  <option value="sample_images/avg_rai.nii">R-L labeled average (rai)</option>
+  <option value="sample_images/avg_rps.nii">R-L labeled average (rps)</option>
+  <option value="sample_images/avg_rpi.nii">R-L labeled average (rpi)</option>
+  <option value="sample_images/avg_las.nii">R-L labeled average (las)</option>
+  <option value="sample_images/avg_lai.nii">R-L labeled average (lai)</option>
+  <option value="sample_images/avg_lps.nii">R-L labeled average (lps)</option>
+  <option value="sample_images/avg_lpi.nii">R-L labeled average (lpi)</option>
+  <option value="sample_images/avg152T1_RL_nifti.nii">R-L labeled average (big-endian)</option>
+  <option value="sample_images/zstat1.nii">z map</option>
   </select>
 </nav>
 <div class="container">
@@ -93,6 +98,5 @@ function setup_canvas_ranges(img) {
 }
 
 </script>
-<canvas id ="foo" height="64" width="64"></canvas>
 </body>
 </html>
