@@ -1,6 +1,7 @@
 "use strict";
 var ndarray = require('ndarray');
 var jBinary = require('jbinary');
+var jDataView = require('jdataview');
 
 module.exports = function(input) {
   var my = {};
